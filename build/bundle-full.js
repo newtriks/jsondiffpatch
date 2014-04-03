@@ -2206,6 +2206,13 @@ process.browser = true;
 process.env = {};
 process.argv = [];
 
+function noop() {}
+
+process.on = noop;
+process.once = noop;
+process.off = noop;
+process.emit = noop;
+
 process.binding = function (name) {
     throw new Error('process.binding is not supported');
 }
@@ -2434,8 +2441,8 @@ if (inNode) {
 	exports.version = '0.1.5';
 }
 
-}).call(this,_dereq_("/home/sheila/proj/JsonDiffPatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"./date-reviver":7,"./diffpatcher":8,"/home/sheila/proj/JsonDiffPatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":2}],10:[function(_dereq_,module,exports){
+}).call(this,_dereq_("/Users/Benja/proj/JsonDiffPatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
+},{"./date-reviver":7,"./diffpatcher":8,"/Users/Benja/proj/JsonDiffPatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":2}],10:[function(_dereq_,module,exports){
 
 var DiffContext = _dereq_('../contexts/diff').DiffContext;
 var PatchContext = _dereq_('../contexts/patch').PatchContext;
