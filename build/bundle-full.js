@@ -2315,15 +2315,17 @@ exports.ReverseContext = ReverseContext;
 
 // use as 2nd parameter for JSON.parse to revive Date instances
 module.exports = function dateReviver(key, value) {
-    var a;
+    var parts;
     if (typeof value === 'string') {
-        a = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2}(?:\.\d*)?)(Z|([+\-])(\d{2}):(\d{2}))$/.exec(value);
-        if (a) {
-            return new Date(Date.UTC(+a[1], +a[2] - 1, +a[3], +a[4], +a[5], +a[6]));
+        parts = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.(\d*))?(Z|([+\-])(\d{2}):(\d{2}))$/.exec(value);
+        if (parts) {
+            return new Date(Date.UTC(+parts[1], +parts[2] - 1, +parts[3],
+              +parts[4], +parts[5], +parts[6], +(parts[7] || 0)));
         }
     }
     return value;
 };
+
 },{}],8:[function(_dereq_,module,exports){
 
 var Processor = _dereq_('./processor').Processor;
@@ -2438,11 +2440,11 @@ if (inNode) {
 	exports.console = formatters.console;
 } else {
 	exports.homepage = 'https://github.com/benjamine/jsondiffpatch';
-	exports.version = '0.1.5';
+	exports.version = '0.1.7';
 }
 
-}).call(this,_dereq_("/Users/Benja/proj/JsonDiffPatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"./date-reviver":7,"./diffpatcher":8,"/Users/Benja/proj/JsonDiffPatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":2}],10:[function(_dereq_,module,exports){
+}).call(this,_dereq_("/Users/Benja/proj/jsondiffpatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
+},{"./date-reviver":7,"./diffpatcher":8,"/Users/Benja/proj/jsondiffpatch/node_modules/gulp-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":2}],10:[function(_dereq_,module,exports){
 
 var DiffContext = _dereq_('../contexts/diff').DiffContext;
 var PatchContext = _dereq_('../contexts/patch').PatchContext;
@@ -2602,21 +2604,21 @@ var diffFilter = function arraysDiffFilter(context){
             // added, try to match with a removed item and register as position move
             var isMove = false;
             if (detectMove && removedItemsLength > 0) {
-                for (index1 = 0; index1 < removedItemsLength; index1++) {
-                    if (match(trimmed1, trimmed2, removedItems[index1] - commonHead,
+                for (var removeItemIndex1 = 0; removeItemIndex1 < removedItemsLength; removeItemIndex1++) {
+                    index1 = removedItems[removeItemIndex1];
+                    if (match(trimmed1, trimmed2, index1 - commonHead,
                         index - commonHead, matchContext)) {
                         // store position move as: [originalValue, newPosition, ARRAY_MOVE]
-                        result['_' + removedItems[index1]].splice(1, 2, index, ARRAY_MOVE);
+                        result['_' + index1].splice(1, 2, index, ARRAY_MOVE);
                         if (!includeValueOnMove) {
                             // don't include moved value on diff, to save bytes
-                            result['_' + removedItems[index1]][0] = '';
+                            result['_' + index1][0] = '';
                         }
 
-                        index1 = removedItems[index1];
                         index2 = index;
                         child = new DiffContext(context.left[index1], context.right[index2]);
                         context.push(child, index2);
-                        removedItems.splice(index1, 1);
+                        removedItems.splice(removeItemIndex1, 1);
                         isMove = true;
                         break;
                     }
@@ -2810,6 +2812,7 @@ exports.patchFilter = patchFilter;
 exports.collectChildrenPatchFilter = collectChildrenPatchFilter;
 exports.reverseFilter = reverseFilter;
 exports.collectChildrenReverseFilter = collectChildrenReverseFilter;
+
 },{"../contexts/diff":4,"../contexts/patch":5,"../contexts/reverse":6,"./lcs":12}],11:[function(_dereq_,module,exports){
 var diffFilter = function datesDiffFilter(context) {
     if (context.left instanceof Date) {
