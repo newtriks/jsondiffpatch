@@ -24,7 +24,8 @@ var diffFilter = function trivialMatchesDiffFilter(context) {
         return;
     }
     if (typeof context.left === 'function' || typeof context.right === 'function' ) {
-        throw new Error('functions are not supported');
+        context.setResult(undefined).exit();
+        return;
     }
     context.leftType = context.left === null ? 'null' : typeof context.left;
     context.rightType = context.right === null ? 'null' : typeof context.right;
